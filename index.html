@@ -15,29 +15,25 @@
             height: 100vh;
             margin: 0;
             text-align: center;
-            overflow: hidden; /* Prevents scrollbars from appearing */
+            overflow: hidden; 
         }
         
-        /* Container to hold all the generated stars */
         #stars-container {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0; /* Keeps the stars in the background */
+            z-index: 0; 
         }
 
-        /* The base styling for a single star */
         .star {
             position: absolute;
             background-color: white;
             border-radius: 50%;
-            /* The animation will be customized per star in JS */
             animation: twinkle infinite ease-in-out;
         }
 
-        /* The keyframes that make the stars glow and dim */
         @keyframes twinkle {
             0%, 100% { 
                 opacity: 0.1; 
@@ -50,16 +46,14 @@
             }
         }
         
-        /* The text container */
         .container {
             position: relative;
-            z-index: 1; /* Brings the text in front of the stars */
+            z-index: 1; 
             display: flex;
             flex-direction: column;
             gap: 15px;
             font-size: 1.25rem;
             padding: 20px;
-            /* A subtle shadow behind the text ensures it remains readable if a star shines directly behind it */
             text-shadow: 0 0 10px black, 0 0 20px black; 
         }
 
@@ -75,6 +69,7 @@
     <div class="container">
         <div>"How long have you been together"</div>
         <div id="years"></div>
+        <div id="months"></div>
         <div id="days"></div>
         <div id="minutes"></div>
         
@@ -86,22 +81,19 @@
         // --- STAR GENERATOR LOGIC ---
         function createStars() {
             const container = document.getElementById('stars-container');
-            const starCount = 150; // Adjust this number for more or fewer stars
+            const starCount = 150; 
 
             for (let i = 0; i < starCount; i++) {
                 let star = document.createElement('div');
                 star.classList.add('star');
                 
-                // Randomize position across the screen
                 star.style.left = `${Math.random() * 100}vw`;
                 star.style.top = `${Math.random() * 100}vh`;
                 
-                // Randomize size (between 1px and 3px)
                 let size = Math.random() * 2 + 1;
                 star.style.width = `${size}px`;
                 star.style.height = `${size}px`;
                 
-                // Randomize animation duration (how fast it blinks) and delay (so they don't blink in unison)
                 star.style.animationDuration = `${Math.random() * 3 + 2}s`;
                 star.style.animationDelay = `${Math.random() * 5}s`;
                 
@@ -117,17 +109,23 @@
             
             const diffMs = now - startDate;
 
+            // Time constants
             const msInMinute = 1000 * 60;
             const msInDay = msInMinute * 60 * 24;
             const msInYear = msInDay * 365.25; 
+            const msInMonth = msInYear / 12; // Added month constant
 
+            // Absolute totals
             const totalYears = (diffMs / msInYear).toFixed(1); 
+            const totalMonths = Math.floor(diffMs / msInMonth); // Added months calculation
             const totalDays = Math.floor(diffMs / msInDay);
             const totalMinutes = Math.floor(diffMs / msInMinute);
 
             const formatNumber = (num) => Number(num).toLocaleString('en-US');
 
+            // Set the content
             document.getElementById('years').innerText = `"${totalYears} years"`;
+            document.getElementById('months').innerText = `"${formatNumber(totalMonths)} months"`;
             document.getElementById('days').innerText = `"${formatNumber(totalDays)} days"`;
             document.getElementById('minutes').innerText = `"${formatNumber(totalMinutes)} minutes"`;
         }
