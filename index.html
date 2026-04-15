@@ -9,17 +9,14 @@
             background-color: black;
             color: white;
             font-family: 'Courier New', Courier, monospace; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
             text-align: center;
-            overflow: hidden; 
+            /* Removed overflow: hidden so you can scroll */
         }
         
+        /* Fixed background so stars don't scroll away */
         #stars-container {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -35,22 +32,24 @@
         }
 
         @keyframes twinkle {
-            0%, 100% { 
-                opacity: 0.1; 
-                transform: scale(0.8); 
-            }
-            50% { 
-                opacity: 1; 
-                transform: scale(1.2); 
-                box-shadow: 0 0 6px rgba(255, 255, 255, 0.8); 
-            }
+            0%, 100% { opacity: 0.1; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 6px rgba(255, 255, 255, 0.8); }
         }
         
-        .container {
+        /* Wraps all the content to sit on top of the stars */
+        .content-wrapper {
             position: relative;
-            z-index: 1; 
+            z-index: 1;
+            width: 100%;
+        }
+
+        /* The first screen you see (100vh means 100% of the viewport height) */
+        .hero-section {
             display: flex;
             flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; 
             gap: 15px;
             font-size: 1.25rem;
             padding: 20px;
@@ -60,21 +59,66 @@
         .dialogue-gap {
             margin-top: 40px; 
         }
+
+        /* A subtle animation to tell people to scroll down */
+        .scroll-prompt {
+            margin-top: 60px;
+            font-size: 0.9rem;
+            opacity: 0.6;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(10px); }
+            60% { transform: translateY(5px); }
+        }
+
+        /* The section where the PDF lives */
+        .pdf-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px 100px 20px;
+            min-height: 100vh;
+        }
+
+        /* Styling the PDF viewer to look nice against the space background */
+        iframe {
+            width: 90%;
+            max-width: 800px;
+            height: 80vh; /* Takes up 80% of the screen height */
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            background-color: white; /* Keeps the PDF readable */
+        }
     </style>
 </head>
 <body>
 
     <div id="stars-container"></div>
 
-    <div class="container">
-        <div>"How long have you been together"</div>
-        <div id="years"></div>
-        <div id="months"></div>
-        <div id="days"></div>
-        <div id="minutes"></div>
+    <div class="content-wrapper">
         
-        <div class="dialogue-gap">"That's a long time"</div>
-        <div>"It's not enough"</div>
+        <section class="hero-section">
+            <div>"How long have you been together"</div>
+            <div id="years"></div>
+            <div id="months"></div>
+            <div id="days"></div>
+            <div id="minutes"></div>
+            
+            <div class="dialogue-gap">"That's a long time"</div>
+            <div>"It's not enough"</div>
+
+            <div class="scroll-prompt">↓ Scroll Down ↓</div>
+        </section>
+
+        <section class="pdf-section">
+            <iframe src="MOC-256214_The_Astral_J_The_Astral_Bricks_-_Rocky_Space_Friend.pdf" title="Embedded Document"></iframe>
+        </section>
+
     </div>
 
     <script>
@@ -103,38 +147,30 @@
 
         // --- TIME CALCULATION LOGIC ---
         function updateTime() {
-            // Start date: August 25, 2022, 7:20 PM Peru Time (UTC-5)
             const startDate = new Date('2022-08-25T19:20:00-05:00');
             const now = new Date();
-            
             const diffMs = now - startDate;
 
-            // Time constants
             const msInMinute = 1000 * 60;
             const msInDay = msInMinute * 60 * 24;
             const msInYear = msInDay * 365.25; 
-            const msInMonth = msInYear / 12; // Added month constant
+            const msInMonth = msInYear / 12; 
 
-            // Absolute totals
             const totalYears = (diffMs / msInYear).toFixed(1); 
-            const totalMonths = Math.floor(diffMs / msInMonth); // Added months calculation
+            const totalMonths = Math.floor(diffMs / msInMonth); 
             const totalDays = Math.floor(diffMs / msInDay);
             const totalMinutes = Math.floor(diffMs / msInMinute);
 
             const formatNumber = (num) => Number(num).toLocaleString('en-US');
 
-            // Set the content
             document.getElementById('years').innerText = `"${totalYears} years"`;
             document.getElementById('months').innerText = `"${formatNumber(totalMonths)} months"`;
             document.getElementById('days').innerText = `"${formatNumber(totalDays)} days"`;
             document.getElementById('minutes').innerText = `"${formatNumber(totalMinutes)} minutes"`;
         }
 
-        // Run both scripts when the page loads
         createStars();
         updateTime();
-        
-        // Refresh the math every 60 seconds
         setInterval(updateTime, 60000);
     </script>
 
